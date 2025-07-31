@@ -1,6 +1,7 @@
 # dora
 calculator of bitcoin premium
 
+```
 START
 
 INPUT: Initial USD Premium (e.g., $10,000)
@@ -37,3 +38,4 @@ Example: 2.0 BTC * $60,000 = $120,000 USD
 -> DISPLAY: Death Benefit (BTC & USD)
 
 END
+```
