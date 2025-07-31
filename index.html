@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bitcoin Life Insurance Calculator</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom font for Inter */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5; /* Light gray background */
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+    <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md border border-gray-200">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Bitcoin Life Insurance Calculator</h1>
+
+        <div class="mb-4">
+            <label for="initialPremium" class="block text-gray-700 text-sm font-semibold mb-2">
+                Initial USD Premium:
+            </label>
+            <input type="number" id="initialPremium" value="10000" min="1"
+                   class="shadow-sm appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 ease-in-out bg-gray-50">
+        </div>
+
+        <div class="mb-6">
+            <label for="bitcoinPrice" class="block text-gray-700 text-sm font-semibold mb-2">
+                Current Bitcoin Price (USD per BTC):
+            </label>
+            <input type="number" id="bitcoinPrice" value="60000" min="1"
+                   class="shadow-sm appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 ease-in-out bg-gray-50">
+        </div>
+
+        <button onclick="calculateInsurance()"
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75 transition duration-200 ease-in-out shadow-md hover:shadow-lg">
+            Calculate
+        </button>
+
+        <div id="results" class="mt-8 p-6 bg-blue-50 rounded-lg border border-blue-200 text-gray-800">
+            <h2 class="text-xl font-semibold mb-4 text-blue-800">Your Policy Projections:</h2>
+            <p class="mb-2"><strong class="text-blue-700">Initial BTC Purchased:</strong> <span id="initialBtc">0.0000 BTC</span></p>
+            <p class="mb-2"><strong class="text-blue-700">Cash Value (after 10 years):</strong> <span id="cashValueBtc">0.0000 BTC</span> (<span id="cashValueUsd">$0.00 USD</span>)</p>
+            <p><strong class="text-blue-700">Death Benefit:</strong> <span id="deathBenefitBtc">0.00 BTC</span> (<span id="deathBenefitUsd">$0.00 USD</span>)</p>
+
+            <div class="mt-4 text-sm text-gray-600 border-t border-gray-300 pt-4">
+                <p>
+                    <strong class="font-medium">Assumptions:</strong>
+                    <ul class="list-disc list-inside ml-2">
+                        <li>Cash value grows at a simplified net 1% annually in BTC terms.</li>
+                        <li>Death benefit is a fixed 2.0 BTC.</li>
+                        <li>Future USD values are based on the Bitcoin price you enter.</li>
+                        <li>This is a simplified model for illustrative purposes only. Actual policy terms, fees, and market volatility will vary.</li>
+                    </ul>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function calculateInsurance() {
+            const initialPremiumUSD = parseFloat(document.getElementById('initialPremium').value);
+            const bitcoinPriceUSD = parseFloat(document.getElementById('bitcoinPrice').value);
+
+            // Basic validation
+            if (isNaN(initialPremiumUSD) || initialPremiumUSD <= 0 || isNaN(bitcoinPriceUSD) || bitcoinPriceUSD <= 0) {
+                alert('Please enter valid positive numbers for premium and Bitcoin price.');
+                return;
+            }
+
+            // 1. Initial BTC Amount
+            const initialBtcAmount = initialPremiumUSD / bitcoinPriceUSD;
+            document.getElementById('initialBtc').textContent = `${initialBtcAmount.toFixed(4)} BTC`;
+
+            // 2. Cash Value (after 10 years)
+            const annualBtcGrowthRate = 0.01; // 1% annual growth in BTC terms
+            const yearsForCashValue = 10;
+            const cashValueAfter10YearsBtc = initialBtcAmount * Math.pow((1 + annualBtcGrowthRate), yearsForCashValue);
+            const hypotheticalFutureBtcPriceForCashValue = bitcoinPriceUSD; // Using current input BTC price for future projection
+            const cashValueUsd = cashValueAfter10YearsBtc * hypotheticalFutureBtcPriceForCashValue;
+
+            document.getElementById('cashValueBtc').textContent = `${cashValueAfter10YearsBtc.toFixed(4)} BTC`;
+            document.getElementById('cashValueUsd').textContent = `$${cashValueUsd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD`;
+
+            // 3. Death Benefit
+            const guaranteedDeathBenefitBtc = 2.0; // Fixed 2.0 BTC death benefit
+            const hypotheticalBtcPriceAtDeath = bitcoinPriceUSD; // Using current input BTC price for death benefit projection
+            const deathBenefitUsd = guaranteedDeathBenefitBtc * hypotheticalBtcPriceAtDeath;
+
+            document.getElementById('deathBenefitBtc').textContent = `${guaranteedDeathBenefitBtc.toFixed(2)} BTC`;
+            document.getElementById('deathBenefitUsd').textContent = `$${deathBenefitUsd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD`;
+        }
+
+        // Run calculation on page load with default values
+        document.addEventListener('DOMContentLoaded', calculateInsurance);
+    </script>
+</body>
+</html>
